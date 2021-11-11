@@ -1,0 +1,47 @@
+CREATE DATABASE busservices;
+
+CREATE TABLE busbooking
+(
+    booking_id INT(6) NOT NULL AUTO_INCREMENT,
+    depart_date DATE NOT NULL,
+    depart_time TIME NOT NULL,
+    journey VARCHAR(10) NOT NULL,
+    depart_station VARCHAR(20) NOT NULL,
+    dest_station VARCHAR(20) NOT NULL,
+    PRIMARY KEY (booking_id)
+);
+
+CREATE TABLE customer
+(
+    customer_id INT(6) NOT NULL AUTO_INCREMENT,
+    f_name VARCHAR(20) NOT NULL,
+    l_name VARCHAR(20) NOT NULL,
+    mobilehp VARCHAR(20) NOT NULL,
+    username VARCHAR(20) NOT NULL,
+    password VARCHAR(20) NOT NULL,
+    PRIMARY KEY (customer_id)
+);
+
+CREATE TABLE admin
+(
+    admin_id INT(6) NOT NULL AUTO_INCREMENT,
+    username VARCHAR(20) NOT NULL,
+    password VARCHAR(20) NOT NULL,
+    PRIMARY KEY (admin_id)
+);
+
+CREATE TABLE customer_busbooking
+(
+    customer_booking_id INT(6) NOT NULL AUTO_INCREMENT,
+	customer_id INT(6) NOT NULL,
+    booking_id INT(6) NOT NULL,
+    PRIMARY KEY (customer_booking_id),
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+    FOREIGN KEY (booking_id) REFERENCES busbooking(booking_id)
+);
+
+SELECT * FROM customer AS c, booking AS b, customer_busbooking AS cb
+WHERE
+cb.customer_id = c.customer_id
+AND
+cb.booking_id = b.booking_id;
