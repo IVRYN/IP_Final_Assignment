@@ -6,7 +6,7 @@ include ("common.php");
 
 if (isset($_POST['add_booking']))
 {
-    user_add_booking($_POST['depart_date'], $_POST['depart_time'], $_POST['depart_station'], $_POST['dest_station']);
+    user_add_booking($_SESSION['user_id'], $_POST['depart_date'], $_POST['depart_time'], $_POST['depart_station'], $_POST['dest_station']);
 }
 
 $page_title     =   "Add Booking | Murni Bus Ticketing";

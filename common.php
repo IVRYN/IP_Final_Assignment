@@ -34,9 +34,9 @@ function login_user($username, $password)
 
     if (count($errors) == 0)
     {
-        $password   =   md5($password);
+        $password       =   md5($password);
 
-        $query_user =   sprintf("SELECT * FROM customer
+        $user_query     =   sprintf("SELECT * FROM customer
                                  WHERE username='%s'
                                  AND password='%s'",
                                  $username,
@@ -44,29 +44,32 @@ function login_user($username, $password)
                                );
 
 
-        $result     =   mysqli_query ($dbconnect, $query_user) or die (mysql_error());
+        $user_result    =   mysqli_query ($dbconnect, $user_query) or die (mysql_error());
 
-        $user_row   =   mysqli_num_rows($result);
+        $user_row       =   mysqli_num_rows($user_result);
 
         if ($user_row == 1)
         {
-            $_SESSION['username']        =   $username;
-            $_SESSION['authorization']   =   'user';
-            $_SESSION['login']           =   true;
+            $user_id    =   mysqli_fetch_row($user_result);
+
+            $_SESSION['username']       =   $username;
+            $_SESSION['user_id']        =   $user_id[0];
+            $_SESSION['authorization']  =   'user';
+            $_SESSION['login']          =   true;
 
             header('Location: '. HOSTNAME . 'dashboard.php');
         } else
         {
-            $query_admin    =   sprintf("SELECT * FROM admin
+            $admin_query    =   sprintf("SELECT * FROM admin
                                          WHERE username='%s'
                                          AND password='%s'",
                                          $username,
                                          $password
                                        );
 
-            $result         =   mysqli_query($dbconnect, $query_admin);
+            $admin_result   =   mysqli_query($dbconnect, $query_admin);
 
-            $admin_row      =   mysqli_num_rows($result);
+            $admin_row      =   mysqli_num_rows($admin_result);
 
             if ($admin_row  ==  1)
             {
@@ -257,7 +260,7 @@ function user_booked_ticket($user_id)
     mysqli_close($dbconnect);
 }
 
-function user_add_booking($depart_date, $depart_time, $depart_station, $dest_station)
+function user_add_booking($user_id, $depart_date, $depart_time, $depart_station, $dest_station)
 {
     global $errors;
     global $dbconnect;
@@ -291,18 +294,51 @@ function user_add_booking($depart_date, $depart_time, $depart_station, $dest_sta
 
     if (count($errors) == 0)
     {
-        $journey    =   calculate_journey($depart_station, $dest_station);
+        $journey        =   calculate_journey($depart_station, $dest_station);
+        $depart_time    =   $depart_time . ":00";
 
-        $user_add_booking_query     =   sprintf("INSERT INTO booking
-                                        (depart_date, depart_time, depart_station, dest_station, journey)
-                                         VALUES
-                                         ('%s', '%s', '%s', '%s', '%s')",
-                                         $depart_date,
-                                         $depart_time,
-                                         $depart_station,
-                                         $dest_station,
-                                         $journey);
+        $user_add_booking_query     =   sprintf("INSERT INTO busbooking
+                                                 (depart_date, depart_time, depart_station, dest_station, journey)
+                                                 VALUES
+                                                 ('%s', '%s', '%s', '%s', '%s')",
+                                                 $depart_date,
+                                                 $depart_time,
+                                                 $depart_station,
+                                                 $dest_station,
+                                                 $journey
+                                                );
+
+        $user_add_booking_result    =   mysqli_query($dbconnect, $user_add_booking_query);
+
+        if ($user_add_booking_result)
+        {
+            $user_booking_id        =   mysqli_insert_id($dbconnect);
+
+            $user_assoc_booking_query   =   sprintf("INSERT INTO customer_busbooking
+                                                    (customer_id, booking_id)
+                                                    VALUES
+                                                    ('%d','%d')",
+                                                    $user_id,
+                                                    $user_booking_id
+                                                  );
+
+            $user_assoc_booking_result  =   mysqli_query($dbconnect, $user_assoc_booking_query);
+
+            if ($user_assoc_booking_result)
+            {
+                header('Location: ' . HOSTNAME . 'dashboard.php');
+            } else
+            {
+                array_push($errors, "An error has occured during booking redirecting");
+            }
+
+        } else
+        {
+            array_push($errors, "An error has occured during booking the ticket.");
+        }
     }
+
+    mysqli_close($dbconnect);
 }
 
 function calculate_journey($depart_station, $dest_station)
@@ -311,7 +347,7 @@ function calculate_journey($depart_station, $dest_station)
                     "kuala_lumpur"      =>  [
                                             "kuala_lumpur"      =>  0,
                                             "johor_bahru"       =>  0,
-                                            "kuantan"           =>  0,
+                                            "kuantan"           =>  8,
                                             "kuala_terengganu"  =>  0,
                                             "arau"              =>  0
                                             ],
