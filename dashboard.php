@@ -1,6 +1,6 @@
 <?php
 session_start();
-include ("auth.php");
+include ('authenticate.php');
 include ("common.php");
 
 $page_title     =   "Dashboard | Murni Bus Ticketing";
@@ -13,7 +13,7 @@ include ("includes/header.php");
             <h2>Booked tickets</h2>
         </div>
         <div class="col-sm-12">
-            <?php user_booked_ticket(1); ?>
+            <?php user_booked_ticket($_SESSION['user_id']); ?>
         </div>
     </div>
 </div>

@@ -67,7 +67,7 @@ function login_user($username, $password)
                                          $password
                                        );
 
-            $admin_result   =   mysqli_query($dbconnect, $query_admin);
+            $admin_result   =   mysqli_query($dbconnect, $admin_query);
 
             $admin_row      =   mysqli_num_rows($admin_result);
 
@@ -203,7 +203,7 @@ function user_booked_ticket($user_id)
                                                     depart_station,
                                                     dest_station
                                              FROM busbooking AS b, customer_busbooking AS cb
-                                             WHERE cb.customer_id='%c'
+                                             WHERE cb.customer_id='%d'
                                              AND cb.booking_id=b.booking_id
                                              ORDER BY b.booking_id ASC", $user_id);
 
@@ -226,13 +226,14 @@ function user_booked_ticket($user_id)
                               <th scope=\"col\">Station of Departure</th>
                               <th scope=\"col\">Destined Station</th>
                               <th scope=\"col\">Journey</th>
+                              <th scope=\"col\">User Control</th>
                           </tr>
                       </thead>
                       <tbody>
              ";
 
         //  Print ticket data per row
-        while ($ticket_rows     =   mysql_fetch_assoc($user_booking_ticket_result))
+        while ($ticket_rows     =   mysqli_fetch_assoc($user_booking_ticket_result))
         {
             echo "<tr>
                       <td>" . $ticket_rows['booking_id'] . "</td>
@@ -241,6 +242,10 @@ function user_booked_ticket($user_id)
                       <td>" . $ticket_rows['depart_station'] . "</td>
                       <td>" . $ticket_rows['dest_station'] . "</td>
                       <td>" . $ticket_rows['journey'] . "</td>
+                      <td>
+                          <button class=\"btn btn-primary\" type=\"submit\" formaction=\"delete_booking.php\">Edit</button>
+                          <button class=\"btn btn-danger\" type=\"submit\" formaction=\"delete_booking.php\">Cancel</button>
+                      </td>
                   </tr>
                  ";
         }

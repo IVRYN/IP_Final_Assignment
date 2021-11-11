@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// include ("auth.php");
+include ("authenticate.php");
 include ("common.php");
 
 if (isset($_POST['add_booking']))
