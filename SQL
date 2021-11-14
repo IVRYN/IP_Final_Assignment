@@ -1,5 +1,7 @@
 CREATE DATABASE busservices;
 
+USE busservices;
+
 CREATE TABLE busbooking
 (
     booking_id INT(6) NOT NULL AUTO_INCREMENT,
@@ -39,9 +41,3 @@ CREATE TABLE customer_busbooking
     FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE,
     FOREIGN KEY (booking_id) REFERENCES busbooking(booking_id) ON DELETE CASCADE
 );
-
-SELECT * FROM customer AS c, booking AS b, customer_busbooking AS cb
-WHERE
-cb.customer_id = c.customer_id
-AND
-cb.booking_id = b.booking_id;
