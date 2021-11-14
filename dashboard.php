@@ -13,7 +13,12 @@ include ("includes/header.php");
             <h2>Booked tickets</h2>
         </div>
         <div class="col-sm-12">
-            <?php user_booked_ticket($_SESSION['user_id']); ?>
+            <?php
+                if ($_SESSION['authorization'] == "user")
+                    user_booked_ticket($_SESSION['user_id']);
+                else
+                    admin_user_booking_view();
+            ?>
         </div>
     </div>
 </div>

@@ -239,8 +239,8 @@ function user_booked_ticket($user_id)
                       <td>" . $ticket_rows['booking_id'] . "</td>
                       <td>" . $ticket_rows['depart_date'] . "</td>
                       <td>" . $ticket_rows['depart_time'] . "</td>
-                      <td>" . $ticket_rows['depart_station'] . "</td>
-                      <td>" . $ticket_rows['dest_station'] . "</td>
+                      <td>" . station_format($ticket_rows['depart_station']) . "</td>
+                      <td>" . station_format($ticket_rows['dest_station']) . "</td>
                       <td>" . $ticket_rows['journey'] . "</td>
                       <td>
                           <button class=\"btn btn-primary\" type=\"submit\" formaction=\"delete_booking.php\">Edit</button>
@@ -265,6 +265,89 @@ function user_booked_ticket($user_id)
     mysqli_close($dbconnect);
 }
 
+function admin_user_booking_view()
+{
+    global $dbconnect;
+
+    // if (isset($username_query)) {}
+
+    $admin_view_all_ticket_query    =   "SELECT b.booking_id, c.username, c.f_name, c.l_name, b.depart_date, b.depart_time, b.depart_station, b.dest_station
+                                         FROM customer AS c, busbooking AS b, customer_busbooking AS cb
+                                         WHERE cb.customer_id = c.customer_id
+                                         AND cb.booking_id = b.booking_id
+                                         ORDER BY booking_id DESC";
+
+    $admin_view_all_ticket_result   =   mysqli_query($dbconnect, $admin_view_all_ticket_query);
+
+    $number_of_tickets              =   mysqli_num_rows($admin_view_all_ticket_result);
+
+    if ($number_of_tickets > 0)
+    {
+        echo "<div class=\"col-sm-12 justify-content-center\">
+                  <h2>There is currently $number_of_tickets booked.</h2>
+              </div>
+              <div class=\"col-sm-12\">
+                  <table class=\"table\">
+                      <thead>
+                          <tr>
+                              <th scope=\"col\">#</th>
+                              <th scope=\"col\">Username</th>
+                              <th scope=\"col\">First Name</th>
+                              <th scope=\"col\">Last Name</th>
+                              <th scope=\"col\">Date of Departure</th>
+                              <th scope=\"col\">Time of Departure</th>
+                              <th scope=\"col\">Station of Departure</th>
+                              <th scope=\"col\">Destined Station</th>
+                              <th scope=\"col\">User Control</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+             ";
+
+        while ($ticket_rows     =   mysqli_fetch_assoc($admin_view_all_ticket_result))
+        {
+            echo "<tr>
+                      <td>" . $ticket_rows['booking_id'] . "</td>
+                      <td>" . $ticket_rows['username'] . "</td>
+                      <td>" . $ticket_rows['f_name'] . "</td>
+                      <td>" . $ticket_rows['l_name'] . "</td>
+                      <td>" . $ticket_rows['depart_date'] . "</td>
+                      <td>" . $ticket_rows['depart_time'] . "</td>
+                      <td>" . station_format($ticket_rows['depart_station']) . "</td>
+                      <td>" . station_format($ticket_rows['dest_station']) . "</td>
+                      <td>
+                          <button class=\"btn btn-danger\" type=\"submit\" formaction=\"delete_booking.php\">Cancel</button>
+                      </td>
+                  </tr>
+                 ";
+        }
+
+        echo "        </tbody>
+                  </table>
+              </div>
+             ";
+    } else
+    {
+        echo "<div class=\"col-sm-12 justify-content-center\">
+                  <h2>There is currently $user_number_tickets booked.</h2>
+              </div>";
+    }
+
+    mysqli_close($dbconnect);
+}
+
+/*
+ *  @param  user_id         ->  integer
+ *  @param  depart_date     ->  string
+ *  @param  depart_time     ->  string
+ *  @param  depart_station  ->  string
+ *  @param  dest_station    ->  string
+ *
+ *  @brief
+ *
+ *  @return
+ *
+ */
 function user_add_booking($user_id, $depart_date, $depart_time, $depart_station, $dest_station)
 {
     global $errors;
@@ -346,47 +429,80 @@ function user_add_booking($user_id, $depart_date, $depart_time, $depart_station,
     mysqli_close($dbconnect);
 }
 
+/*
+ *  @param  depart_station  ->  string
+ *  @param  dest_station    ->  string
+ *
+ *  @brief
+ *  Takes in the key string associated with station and matches it with a value.
+ *
+ *  @return journey         ->  string
+ */
 function calculate_journey($depart_station, $dest_station)
 {
     $journey    =   [
-                    "kuala_lumpur"      =>  [
-                                            "kuala_lumpur"      =>  0,
-                                            "johor_bahru"       =>  0,
-                                            "kuantan"           =>  8,
-                                            "kuala_terengganu"  =>  0,
-                                            "arau"              =>  0
+                    "kl_sentral"        =>  [
+                                            "kl_sentral"        =>  "0hr",
+                                            "bt_pahat"          =>  "4hr 45mins",
+                                            "kuantan_sentral"   =>  "3hr 58mins",
+                                            "kt_terminal"       =>  "4hr 59mins",
+                                            "jengka_sentral"    =>  "9hr 8mins"
                                             ],
-                    "johor_bahru"       =>  [
-                                            "kuala_lumpur"      =>  0,
-                                            "johor_bahru"       =>  0,
-                                            "kuantan"           =>  0,
-                                            "kuala_terengganu"  =>  0,
-                                            "arau"              =>  0
+                    "bt_pahat"          =>  [
+                                            "kl_sentral"        =>  "4hr 45mins",
+                                            "bt_pahat"          =>  "0hr",
+                                            "kuantan_sentral"   =>  "7hr 33mins",
+                                            "kt_terminal"       =>  "6hr 20mins",
+                                            "jengka_sentral"    =>  "4hr 36mins"
                                             ],
-                    "kuantan"           =>  [
-                                            "kuala_lumpur"      =>  0,
-                                            "johor_bahru"       =>  0,
-                                            "kuantan"           =>  0,
-                                            "kuala_terengganu"  =>  0,
-                                            "arau"              =>  0
+                    "kuantan_sentral"   =>  [
+                                            "kl_sentral"        =>  "3hr 58mins",
+                                            "bt_pahat"          =>  "7hr 33mins",
+                                            "kuantan_sentral"   =>  "0hr",
+                                            "kt_terminal"       =>  "4hr 10mins",
+                                            "jengka_sentral"    =>  "2hr 30mins"
                                             ],
-                    "kuala_terengganu"  =>  [
-                                            "kuala_lumpur"      =>  0,
-                                            "johor_bahru"       =>  0,
-                                            "kuantan"           =>  0,
-                                            "kuala_terengganu"  =>  0,
-                                            "arau"              =>  0
+                    "kt_terminal"       =>  [
+                                            "kl_sentral"        =>  "4hr 59mins",
+                                            "bt_pahat"          =>  "6hr 20mins",
+                                            "kuantan_sentral"   =>  "4hr 10mins",
+                                            "kt_terminal"       =>  "0hr",
+                                            "jengka_sentral"    =>  "3hr 49mins"
                                             ],
-                    "arau"              =>  [
-                                            "kuala_lumpur"      =>  0,
-                                            "johor_bahru"       =>  0,
-                                            "kuantan"           =>  0,
-                                            "kuala_terengganu"  =>  0,
-                                            "arau"              =>  0
+                    "jengka_sentral"    =>  [
+                                            "kl_sentral"        =>  "9hr 8mins",
+                                            "bt_pahat"          =>  "4hr 36mins",
+                                            "kuantan_sentral"   =>  "2hr 30mins",
+                                            "kt_terminal"       =>  "3hr 49mins",
+                                            "jengka_sentral"    =>  "0hr"
                                             ]
                     ];
 
     return $journey[$depart_station][$dest_station];
+}
+
+/*
+ *  @param  station     ->  string
+ *
+ *  @brief
+ *  Takes a RAW string from station, convert it to a proper formatted string output
+ *
+ *  @return string
+function station_format($station)
+{
+    switch ($station)
+    {
+        case "kl_sentral":
+            return "KL Sentral Bus Station";
+        case "bt_pahat":
+            return "Batu Pahat Bus Terminal";
+        case "kuantan_sentral":
+            return "Kuantan Sentral Bus Station";
+        case "kt_terminal":
+            return "Kuala Terengganu Bus Terminal";
+        case "jengka_sentral":
+            return "Jengka Sentral Bus Terminal";
+    }
 }
 
 /*

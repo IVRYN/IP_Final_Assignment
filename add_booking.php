@@ -30,22 +30,22 @@ include ("includes/header.php");
                         <label for="depart_station" class="form-label">Station of Departure</label>
                         <select id="depart_station" class="form-select" name="depart_station">
                             <option value="">Select the departing station</option>
-                            <option value="kuala_lumpur" <?php sticky_select("depart_station", "kuala_lumpur"); ?>>Kuala Lumpur</option>
-                            <option value="johor_bahru" <?php sticky_select("depart_station", "johor_bahru"); ?>>Johor Bahru</option>
-                            <option value="kuantan" <?php sticky_select("depart_station", "kuantan"); ?>>Kuantan</option>
-                            <option value="kuala_terengganu" <?php sticky_select("depart_station", "kuala_terengganu"); ?>>Kuala Terengganu</option>
-                            <option value="arau" <?php sticky_select("depart_station", "arau"); ?>>Arau</option>
+                            <option value="kl_sentral" <?php sticky_select("depart_station", "kl_sentral"); ?>>KL Sentral Bus Station</option>
+                            <option value="bt_pahat" <?php sticky_select("depart_station", "bt_pahat"); ?>>Batu Pahat Bus Terminal</option>
+                            <option value="kuantan_sentral" <?php sticky_select("depart_station", "kuantan_sentral"); ?>>Kuantan Sentral Bus Station</option>
+                            <option value="kt_terminal" <?php sticky_select("depart_station", "kt_terminal"); ?>>Kuala Terengganu Bus Terminal</option>
+                            <option value="jengka_sentral" <?php sticky_select("depart_station", "jengka_sentral"); ?>>Jengka Sentral Bus Terminal</option>
                         </select>
                     </div>
                     <div class="col-sm-12">
                         <label for="dest_station" class="form-label">Destined Station</label>
                         <select id="dest_station" class="form-select" name="dest_station">
                             <option value="">Select the departing station</option>
-                            <option value="kuala_lumpur" <?php sticky_select("dest_station", "kuala_lumpur"); ?>>Kuala Lumpur</option>
-                            <option value="johor_bahru" <?php sticky_select("dest_station", "johor_bahru"); ?>>Johor Bahru</option>
-                            <option value="kuantan" <?php sticky_select("dest_station", "kuantan"); ?>>Kuantan</option>
-                            <option value="kuala_terengganu" <?php sticky_select("dest_station", "kuala_terengganu"); ?>>Kuala Terengganu</option>
-                            <option value="arau" <?php sticky_select("dest_station", "arau"); ?>>Arau</option>
+                            <option value="kl_sentral" <?php sticky_select("dest_station", "kl_sentral"); ?>>KL Sentral Bus Station</option>
+                            <option value="bt_pahat" <?php sticky_select("dest_station", "bt_pahat"); ?>>Batu Pahat Bus Terminal</option>
+                            <option value="kuantan_sentral" <?php sticky_select("dest_station", "kuantan_sentral"); ?>>Kuantan Sentral Bus Station</option>
+                            <option value="kt_terminal" <?php sticky_select("dest_station", "kt_terminal"); ?>>Kuala Terengganu Bus Terminal</option>
+                            <option value="jengka_sentral" <?php sticky_select("dest_station", "jengka_sentral"); ?>>Jengka Sentral Bus Terminal</option>
                         </select>
                     </div>
                     <div class="col-sm-12">
