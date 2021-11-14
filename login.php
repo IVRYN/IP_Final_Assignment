@@ -1,7 +1,7 @@
 <?php
 session_start();
 $page_title =   "Login | Murni Bas Ticketing";
-include ("common.php");
+include ('common.php');
 
 if (isset($_POST['login']))
 {

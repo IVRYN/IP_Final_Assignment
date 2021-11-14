@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="<?php echo HOSTNAME . 'css/bootstrap.min.css'; ?>">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 
     <title><?php echo $page_title ?></title>
 </head>
@@ -34,7 +34,7 @@
                         <a class="nav-link" aria-current="page" href="dashboard.php">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="<?php echo HOSTNAME . 'logout.php'; ?>">Logout</a>
+                    <a class="nav-link" aria-current="page" href="logout.php">Logout</a>
                     </li>
                     <?php }?>
                 </ul>

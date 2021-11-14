@@ -36,8 +36,8 @@ CREATE TABLE customer_busbooking
 	customer_id INT(6) NOT NULL,
     booking_id INT(6) NOT NULL,
     PRIMARY KEY (customer_booking_id),
-    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
-    FOREIGN KEY (booking_id) REFERENCES busbooking(booking_id)
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE,
+    FOREIGN KEY (booking_id) REFERENCES busbooking(booking_id) ON DELETE CASCADE
 );
 
 SELECT * FROM customer AS c, booking AS b, customer_busbooking AS cb

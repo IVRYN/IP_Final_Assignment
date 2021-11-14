@@ -1,6 +1,5 @@
 <?php
 
-include ("config/config.php");
 include ("config/mysql_connect.php");
 $errors     =   array();
 $success    =   array();
@@ -8,6 +7,9 @@ $success    =   array();
 /*
  *  @params username -> string
  *  @params password -> string
+ *
+ *  @brief
+ *  Logins in the customer and admin accounts
  *
  *  @return void
  */
@@ -57,7 +59,7 @@ function login_user($username, $password)
             $_SESSION['authorization']  =   'user';
             $_SESSION['login']          =   true;
 
-            header('Location: '. HOSTNAME . 'dashboard.php');
+            header('Location: dashboard.php');
         } else
         {
             $admin_query    =   sprintf("SELECT * FROM admin
@@ -77,7 +79,7 @@ function login_user($username, $password)
                 $_SESSION['authorization']   =   'admin';
                 $_SESSION['login']           =   true;
 
-                header('Location: ' . HOSTNAME . 'admin/dashboard.php');
+                header('Location: dashboard.php');
             } else
             {
                 array_push($errors, "Username/Password is incorrect or does not exist");
@@ -191,7 +193,7 @@ function register_user($f_name, $l_name, $mobilehp, $username, $password, $confi
  *
  *  @return void
  */
-function user_booked_ticket($user_id)
+function user_booked_ticket_view($user_id)
 {
     global $dbconnect;
     $user_id    =   $user_id;
@@ -244,7 +246,9 @@ function user_booked_ticket($user_id)
                       <td>" . $ticket_rows['journey'] . "</td>
                       <td>
                           <button class=\"btn btn-primary\" type=\"submit\" formaction=\"delete_booking.php\">Edit</button>
-                          <button class=\"btn btn-danger\" type=\"submit\" formaction=\"delete_booking.php\">Cancel</button>
+                          <form action=\"dashboard.php\" method=\"post\">
+                              <button class=\"btn btn-danger\" type=\"submit\" name=\"cancel_booking\" value=" . $ticket_rows['booking_id'] . ">Cancel</button>
+                          </form>
                       </td>
                   </tr>
                  ";
@@ -271,7 +275,15 @@ function admin_user_booking_view()
 
     // if (isset($username_query)) {}
 
-    $admin_view_all_ticket_query    =   "SELECT b.booking_id, c.username, c.f_name, c.l_name, b.depart_date, b.depart_time, b.depart_station, b.dest_station
+    $admin_view_all_ticket_query    =   "SELECT b.booking_id,
+                                                c.customer_id,
+                                                c.username,
+                                                c.f_name,
+                                                c.l_name,
+                                                b.depart_date,
+                                                b.depart_time,
+                                                b.depart_station,
+                                                b.dest_station
                                          FROM customer AS c, busbooking AS b, customer_busbooking AS cb
                                          WHERE cb.customer_id = c.customer_id
                                          AND cb.booking_id = b.booking_id
@@ -298,7 +310,7 @@ function admin_user_booking_view()
                               <th scope=\"col\">Time of Departure</th>
                               <th scope=\"col\">Station of Departure</th>
                               <th scope=\"col\">Destined Station</th>
-                              <th scope=\"col\">User Control</th>
+                              <th scope=\"col\">Admin Control</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -316,7 +328,9 @@ function admin_user_booking_view()
                       <td>" . station_format($ticket_rows['depart_station']) . "</td>
                       <td>" . station_format($ticket_rows['dest_station']) . "</td>
                       <td>
-                          <button class=\"btn btn-danger\" type=\"submit\" formaction=\"delete_booking.php\">Cancel</button>
+                          <form action=\"dashboard.php\" method=\"post\">
+                              <button class=\"btn btn-danger\" type=\"submit\" name=\"cancel_booking\" value=" . $ticket_rows['booking_id'] . ">Cancel</button>
+                          </form>
                       </td>
                   </tr>
                  ";
@@ -329,7 +343,7 @@ function admin_user_booking_view()
     } else
     {
         echo "<div class=\"col-sm-12 justify-content-center\">
-                  <h2>There is currently $user_number_tickets booked.</h2>
+                  <h2>There is currently $number_of_tickets booked.</h2>
               </div>";
     }
 
@@ -414,7 +428,7 @@ function user_add_booking($user_id, $depart_date, $depart_time, $depart_station,
 
             if ($user_assoc_booking_result)
             {
-                header('Location: ' . HOSTNAME . 'dashboard.php');
+                header('Location: dashboard.php');
             } else
             {
                 array_push($errors, "An error has occured during booking redirecting");
@@ -427,6 +441,71 @@ function user_add_booking($user_id, $depart_date, $depart_time, $depart_station,
     }
 
     mysqli_close($dbconnect);
+}
+
+/*
+ *  @param  user_id     ->  integer
+ *  @param  booking_id  ->  integer
+ *
+ *  @brief
+ *  Delete the user booking based on the user id and booking id
+ *  check for the user id through the sessions before deleting the booking
+ *  practically, needs user permissions.
+ *
+ *  @return void
+ */
+function user_delete_booking($user_id, $booking_id)
+{
+    global $dbconnect;
+    global $errors;
+    global $success;
+
+    //  delete connected booking row based on the customer id and the booking id
+    $user_delete_booking_query  =   sprintf("DELETE customer_busbooking, busbooking
+                                             FROM customer_busbooking
+                                             INNER JOIN busbooking ON busbooking.booking_id = customer_busbooking.booking_id
+                                             WHERE customer_busbooking.customer_id = '%d'
+                                             AND customer_busbooking.booking_id = '%d'",
+                                             $user_id,
+                                             $booking_id
+                                            );
+
+    $user_delete_booking_result =   mysqli_query($dbconnect, $user_delete_booking_query);
+
+    if ($user_delete_booking_result)
+        array_push($success, "Booking ID $booking_id has been successfully cancelled");
+    else
+        array_push($errors, "Something went wrong during cancellation");
+}
+
+/*
+ *  @param  booking_id  ->  interger
+ *
+ *  @brief
+ *  delete the user booking based on the booking_id
+ *  No user permissions needed or user id based checking
+ *
+ *  @return void
+ */
+function admin_delete_booking($booking_id)
+{
+    global $dbconnect;
+    global $errors;
+    global $success;
+
+    $admin_delete_booking_query     =   sprintf("DELETE customer_busbooking, busbooking
+                                                 FROM customer_busbooking
+                                                 INNER JOIN busbooking ON busbooking.booking_id = customer_busbooking.booking_id
+                                                 WHERE customer_busbooking.booking_id = '%d'",
+                                                 $booking_id
+                                               );
+
+    $admin_delete_booking_result    =   mysqli_query($dbconnect, $admin_delete_booking_query);
+
+    if ($admin_delete_booking_result)
+        array_push($success, "Booking ID $booking_id has been successfully cancelled");
+    else
+        array_push($errors, "Something went wrong during cancellation");
 }
 
 /*
@@ -558,6 +637,21 @@ function display_errors()
         foreach ($errors as $error)
         {
             echo "<li>$error</li>";
+        }
+        echo "</ul>";
+    }
+}
+
+function display_success()
+{
+    global $success;
+
+    if (count($success) > 0)
+    {
+        echo "<ul>";
+        foreach ($success as $suc)
+        {
+            echo "<li>$suc</li>";
         }
         echo "</ul>";
     }
