@@ -488,6 +488,7 @@ function calculate_journey($depart_station, $dest_station)
  *  Takes a RAW string from station, convert it to a proper formatted string output
  *
  *  @return string
+ */
 function station_format($station)
 {
     switch ($station)
