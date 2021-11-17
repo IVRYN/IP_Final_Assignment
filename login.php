@@ -13,7 +13,7 @@ include ("includes/header.php");
 
 <div class="container">
     <div class="row justify-content-center mt-5">
-        <div class="col-sm-5 mt-5">
+        <div class="col-10 col-sm-10 col-md-10 col-lg-6 mt-5">
             <div class="container py-5">
             <form class="row g-3" action="login.php" method="post">
                 <div class="row mb-3">
