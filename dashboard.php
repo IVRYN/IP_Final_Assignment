@@ -24,13 +24,11 @@ include ("includes/header.php");
                 display_success();
             ?>
         </div>
-        <div class="col-sm-12">
-            <?php
-                if ($_SESSION['authorization'] == "user")
-                    user_booked_ticket_view($_SESSION['user_id']);
-                else
-                    admin_user_booking_view();
-            ?>
-        </div>
+        <?php
+            if ($_SESSION['authorization'] == "user")
+                user_booked_ticket_view($_SESSION['user_id']);
+            else
+                admin_user_booking_view();
+        ?>
     </div>
 </div>

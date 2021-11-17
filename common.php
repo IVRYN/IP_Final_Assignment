@@ -215,11 +215,16 @@ function user_booked_ticket_view($user_id)
 
     if ($user_number_tickets > 0)
     {
-        echo "<div class=\"col-sm-12 justify-content-center\">
+        echo "<div class=\"col-10 col-sm-10\">
                   <h2>There is currently $user_number_tickets booked.</h2>
               </div>
-              <div class=\"col-sm-12\">
-                  <table class=\"table\">
+              <div class=\"col-2 col-sm-2\">
+                  <a class=\"float-end btn btn-primary\" href=\"add_booking.php\">
+                      <span style=\"vertical-align: middle;\" class=\"material-icons\">add</span>
+                  </a>
+              </div>
+              <div class=\"table-responsive\">
+                  <table class=\"table table-sm\">
                       <thead>
                           <tr>
                               <th scope=\"col\">Booking ID#</th>
@@ -238,16 +243,20 @@ function user_booked_ticket_view($user_id)
         while ($ticket_rows     =   mysqli_fetch_assoc($user_booking_ticket_result))
         {
             echo "<tr>
-                      <td>" . $ticket_rows['booking_id'] . "</td>
-                      <td>" . $ticket_rows['depart_date'] . "</td>
-                      <td>" . $ticket_rows['depart_time'] . "</td>
-                      <td>" . station_format($ticket_rows['depart_station']) . "</td>
-                      <td>" . station_format($ticket_rows['dest_station']) . "</td>
-                      <td>" . $ticket_rows['journey'] . "</td>
+                      <td class=\"align-middle\">" . $ticket_rows['booking_id'] . "</td>
+                      <td class=\"align-middle\">" . $ticket_rows['depart_date'] . "</td>
+                      <td class=\"align-middle\">" . $ticket_rows['depart_time'] . "</td>
+                      <td class=\"align-middle\">" . station_format($ticket_rows['depart_station']) . "</td>
+                      <td class=\"align-middle\">" . station_format($ticket_rows['dest_station']) . "</td>
+                      <td class=\"align-middle\">" . $ticket_rows['journey'] . "</td>
                       <td>
-                          <button class=\"btn btn-primary\" type=\"submit\" formaction=\"delete_booking.php\">Edit</button>
                           <form action=\"dashboard.php\" method=\"post\">
-                              <button class=\"btn btn-danger\" type=\"submit\" name=\"cancel_booking\" value=" . $ticket_rows['booking_id'] . ">Cancel</button>
+                              <button class=\"btn btn-primary\" type=\"submit\" value=" . $ticket_rows['booking_id'] . " formaction=\"edit_booking.php\">
+                                  <span style=\"vertical-align: middle;\" class=\"material-icons\">edit</span>
+                              </button>
+                              <button class=\"btn btn-danger\" type=\"submit\" name=\"cancel_booking\" value=" . $ticket_rows['booking_id'] . ">
+                                  <span style=\"vertical-align: middle;\" class=\"material-icons\">delete</span>
+                              </button>
                           </form>
                       </td>
                   </tr>
@@ -261,8 +270,13 @@ function user_booked_ticket_view($user_id)
 
     } else
     {
-        echo "<div class=\"col-sm-12 justify-content-center\">
+        echo "<div class=\"col-sm-10\">
                   <h2>There is currently $user_number_tickets booked.</h2>
+              </div>
+              <div class=\"col-sm-2\">
+                  <a class=\"float-end btn btn-primary\" href=\"add_booking.php\">
+                      <span style=\"vertical-align: middle;\" class=\"material-icons\">add</span>
+                  </a>
               </div>";
     }
 
@@ -295,10 +309,13 @@ function admin_user_booking_view()
 
     if ($number_of_tickets > 0)
     {
-        echo "<div class=\"col-sm-12 justify-content-center\">
+        echo "<div class=\"col-sm-10 justify-content-center\">
                   <h2>There is currently $number_of_tickets booked.</h2>
               </div>
-              <div class=\"col-sm-12\">
+              <div class=\"col-sm-2\">
+
+              </div>
+              <div class=\"table-responsive\">
                   <table class=\"table\">
                       <thead>
                           <tr>
@@ -329,7 +346,9 @@ function admin_user_booking_view()
                       <td>" . station_format($ticket_rows['dest_station']) . "</td>
                       <td>
                           <form action=\"dashboard.php\" method=\"post\">
-                              <button class=\"btn btn-danger\" type=\"submit\" name=\"cancel_booking\" value=" . $ticket_rows['booking_id'] . ">Cancel</button>
+                              <button class=\"btn btn-danger\" type=\"submit\" name=\"cancel_booking\" value=" . $ticket_rows['booking_id'] . ">
+                                  <span style=\"vertical-align: middle;\" class=\"material-icons\">delete</span>
+                              </button>
                           </form>
                       </td>
                   </tr>
