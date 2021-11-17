@@ -227,7 +227,7 @@ function user_booked_ticket_view($user_id)
                   <table class=\"table table-sm\">
                       <thead>
                           <tr>
-                              <th scope=\"col\">Booking ID#</th>
+                              <th scope=\"col\">Booking #</th>
                               <th scope=\"col\">Date of Departure</th>
                               <th scope=\"col\">Time of Departure</th>
                               <th scope=\"col\">Station of Departure</th>
@@ -250,8 +250,8 @@ function user_booked_ticket_view($user_id)
                       <td class=\"align-middle\">" . station_format($ticket_rows['dest_station']) . "</td>
                       <td class=\"align-middle\">" . $ticket_rows['journey'] . "</td>
                       <td>
-                          <form action=\"dashboard.php\" method=\"post\">
-                              <button class=\"btn btn-primary\" type=\"submit\" value=" . $ticket_rows['booking_id'] . " formaction=\"edit_booking.php\">
+                          <form action=\"dashboard.php\" method=\"get\">
+                              <button class=\"btn btn-primary\" type=\"submit\" name=\"edit_booking\" value=" . $ticket_rows['booking_id'] . " formaction=\"edit_booking.php\">
                                   <span style=\"vertical-align: middle;\" class=\"material-icons\">edit</span>
                               </button>
                               <button class=\"btn btn-danger\" type=\"submit\" name=\"cancel_booking\" value=" . $ticket_rows['booking_id'] . ">
@@ -268,6 +268,7 @@ function user_booked_ticket_view($user_id)
               </div>
              ";
 
+        mysqli_free_result($user_booking_ticket_result);
     } else
     {
         echo "<div class=\"col-sm-10\">
@@ -359,6 +360,8 @@ function admin_user_booking_view()
                   </table>
               </div>
              ";
+
+        mysqli_free_result($admin_view_all_ticket_result);
     } else
     {
         echo "<div class=\"col-sm-12 justify-content-center\">
@@ -416,7 +419,6 @@ function user_add_booking($user_id, $depart_date, $depart_time, $depart_station,
     if (count($errors) == 0)
     {
         $journey        =   calculate_journey($depart_station, $dest_station);
-        $depart_time    =   $depart_time . ":00";
 
         $user_add_booking_query     =   sprintf("INSERT INTO busbooking
                                                  (depart_date, depart_time, depart_station, dest_station, journey)
@@ -495,6 +497,8 @@ function user_delete_booking($user_id, $booking_id)
         array_push($success, "Booking ID $booking_id has been successfully cancelled");
     else
         array_push($errors, "Something went wrong during cancellation");
+
+    mysqli_close($dbconnect);
 }
 
 /*
@@ -525,6 +529,83 @@ function admin_delete_booking($booking_id)
         array_push($success, "Booking ID $booking_id has been successfully cancelled");
     else
         array_push($errors, "Something went wrong during cancellation");
+
+    mysqli_close($dbconnect);
+}
+
+/*
+ *  @param  booking_id      ->  integer
+ *  @param  depart_date     ->  string
+ *  @param  depart_time     ->  string
+ *  @param  depart_station  ->  string
+ *  @param  dest_station    ->  string
+ *
+ *  @brief
+ *  The function takes in the request from the edit_booking page.
+ *  validates the user ID and modifys the data in the database
+ *
+ *  @return void
+ */
+function user_edit_confirm($booking_id, $depart_date, $depart_time, $depart_station, $dest_station)
+{
+    global $dbconnect;
+    global $errors;
+
+    if (!empty($depart_date))
+        $depart_date    =   evaluate($depart_date);
+    else
+        array_push($errors, "The date of departure is set to the wrong format");
+
+    if (!empty($depart_time))
+        $depart_time    =   evaluate($depart_time);
+    else
+        array_push($errors, "The departure time is set to the wrong format");
+
+    if (!empty($depart_station))
+        $depart_station =   evaluate($depart_station);
+    else
+        array_push($errors, "The station of departure has the wrong value");
+
+    if (!empty($dest_station))
+    {
+        $dest_station   =   evaluate($dest_station);
+
+        if ($depart_station == $dest_station)
+            array_push($errors, "The station of departure cannot be the same as the destination station");
+    } else
+    {
+        array_push($errors, "The destination station has the wrong value");
+    }
+
+    if (count($errors) == 0)
+    {
+        $journey        =   calculate_journey($depart_station, $dest_station);
+
+        $user_edit_confirm_query    =   sprintf("UPDATE busbooking
+                                                 SET depart_date = '%s',
+                                                     depart_time = '%s',
+                                                     depart_station = '%s',
+                                                     dest_station = '%s',
+                                                     journey = '%s'
+                                                 WHERE booking_id = '%d'
+                                                 LIMIT 1",
+                                                 $depart_date,
+                                                 $depart_time,
+                                                 $depart_station,
+                                                 $dest_station,
+                                                 $journey,
+                                                 $booking_id
+                                                );
+
+        $user_edit_confirm_result   =   mysqli_query($dbconnect, $user_edit_confirm_query);
+
+        if (mysqli_affected_rows($dbconnect))
+            header('Location: dashboard.php');
+        else
+            array_push($errors, "No changes has been made to the booking information, please contact an administrator");
+    }
+
+    mysqli_close($dbconnect);
 }
 
 /*
@@ -634,6 +715,10 @@ function sticky_select($request, $value)
     if (isset($_POST['add_booking']))
     {
         if ($_POST[$request] == $value)
+            echo "selected";
+    } else
+    {
+        if ($request == $value)
             echo "selected";
     }
 }
