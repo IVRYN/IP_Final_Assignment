@@ -22,7 +22,7 @@ include ("includes/header.php");
                         <div class="input-group-text">
                             <span class="material-icons">person</span>
                         </div>
-                        <input id="username" class="form-control" type="text" name="username" placeholder="Username" />
+                        <input id="username" class="form-control" type="text" name="username" placeholder="Username" required/>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -31,7 +31,7 @@ include ("includes/header.php");
                         <div class="input-group-text">
                             <span class="material-icons">lock</span>
                         </div>
-                        <input id="password" class="form-control" type="password" name="password" placeholder="Password" />
+                        <input id="password" class="form-control" type="password" name="password" placeholder="Password" required/>
                     </div>
                 </div>
                 <div class="row">

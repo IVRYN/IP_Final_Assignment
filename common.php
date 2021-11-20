@@ -146,6 +146,7 @@ function register_user($f_name, $l_name, $mobilehp, $username, $password, $confi
     {
         $username_exist     =   registration_check($username);
 
+        //  Check if the username exist
         if (!$username_exist)
         {
             //  Check if phone number already exist
@@ -238,7 +239,7 @@ function registration_check($username)
     else
         $user_username_exist    =   true;
 
-    //  Check whether both exist in both
+    //  Check whether username exist in both
     if (!($admin_username_exist) && !($user_username_exist))
         return false;
     else
@@ -771,15 +772,15 @@ function station_format($station)
     switch ($station)
     {
         case "kl_sentral":
-            return "KL Sentral Bus Station";
+            return substr("KL Sentral Bus Station", 0, 20) . "...";
         case "bt_pahat":
-            return "Batu Pahat Bus Terminal";
+            return substr("Batu Pahat Bus Terminal", 0, 20) . "...";
         case "kuantan_sentral":
-            return "Kuantan Sentral Bus Station";
+            return substr("Kuantan Sentral Bus Station", 0, 20) . "...";
         case "kt_terminal":
-            return "Kuala Terengganu Bus Terminal";
+            return substr("Kuala Terengganu Bus Terminal", 0, 20) . "...";
         case "jengka_sentral":
-            return "Jengka Sentral Bus Terminal";
+            return substr("Jengka Sentral Bus Terminal", 0, 20) . "...";
     }
 }
 
@@ -842,6 +843,13 @@ function display_errors()
     }
 }
 
+/*  @param null
+ *
+ *  @brief
+ *  echo out a list of successful operation
+ *
+ *  @return void
+ */
 function display_success()
 {
     global $success;

@@ -2,6 +2,9 @@
 
 DEFINE ('DB_USER', 'root');
 DEFINE ('DB_PASS', 'root');
+
+//  DB_HOST should be changed to 'localhost' instead of 'mysql', since the web-site is hosted
+//  on a docker container on local development system.
 DEFINE ('DB_HOST', 'mysql');
 DEFINE ('DB_NAME', 'busservices');
 
