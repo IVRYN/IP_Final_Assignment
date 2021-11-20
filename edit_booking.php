@@ -1,6 +1,7 @@
 <?php
 session_start();
 include ('authenticate.php');
+include ('authorization.php');
 include ('common.php');
 
 $page_title     =   "Edit Booking | Murni Bus Ticketing";
@@ -59,7 +60,7 @@ include ('includes/header.php');
     <div class="row justify-content-center mt-5 g-3">
         <div class="col-sm-12"><?php display_errors(); ?></div>
         <div class="col-sm-5">
-            <div class="container py-5">
+            <div class="main-container container py-5">
                 <form class="row g-3 mb-3" action="edit_booking.php" method="post">
                     <div class="col-sm-6">
                         <label for="depart_date" class="form-label">Date of Departure</label>

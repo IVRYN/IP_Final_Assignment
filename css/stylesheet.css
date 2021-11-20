@@ -3,6 +3,29 @@
     background-color: #00008b;
 }
 
+.text-darkblue
+{
+    color: #00008b;
+}
+
+.card-float:hover
+{
+    border-color: #00008b;
+}
+
+.card-link
+{
+    width: auto;
+    color: inherit;
+    text-align: center;
+    text-decoration: none;
+}
+
+.card-link:hover
+{
+    color: #000000;
+}
+
 .main-container
 {
     border: 1px solid #ced4da;

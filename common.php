@@ -75,7 +75,10 @@ function login_user($username, $password)
 
             if ($admin_row  ==  1)
             {
+                $admin_id    =   mysqli_fetch_row($admin_result);
+
                 $_SESSION['username']        =   $username;
+                $_SESSION['user_id']         =   $admin_id[0];
                 $_SESSION['authorization']   =   'admin';
                 $_SESSION['login']           =   true;
 
@@ -244,6 +247,70 @@ function registration_check($username)
         return false;
     else
         return true;
+}
+
+/*
+ *  @param  user_id         ->  integer
+ *  @param  authorization   ->  string
+ *
+ *  @brief
+ *  Get the information related to the users.
+ *
+ *  @return void
+ */
+function get_user($user_id = 0, $authorization = 'user')
+{
+    global $dbconnect;
+    global $errors;
+
+    //  Check the authorization first
+    if ($authorization == 'user')
+    {
+        $get_user_query     =   sprintf("SELECT username,
+                                                f_name,
+                                                l_name
+                                         FROM customer
+                                         WHERE customer_id = '%d'",
+                                         $user_id
+                                        );
+
+        $get_user_result    =   mysqli_query($dbconnect, $get_user_query);
+
+        if ($get_user_result)
+        {
+            $user_result    =   mysqli_fetch_assoc($get_user_result);
+            echo "<div class=\"row\">
+                  <div class=\"col-lg-12 px-2\"><h2 class=\"display-6\">Welcome, " . $user_result['username'] . "</h2></div>" .
+                 "<div class=\"col-lg-6 px-2\"><h3 class=\"text-muted\">First Name: " . $user_result['f_name'] .  "</h3></div>" .
+                 "<div class=\"col-lg-6 px-2\"><h3 class=\"text-muted\">Last Name: " . $user_result['l_name'] . "</h3></div>
+                  </div>";
+        } else
+        {
+            array_push($errors, "An error has occured while retrieving customer information");
+        }
+    }
+    else
+    {
+        $get_admin_query     =   sprintf("SELECT username
+                                         FROM admin
+                                         WHERE admin_id = '%d'",
+                                         $user_id
+                                        );
+
+        $get_admin_result    =   mysqli_query($dbconnect, $get_admin_query);
+
+        if ($get_admin_result)
+        {
+            $admin_result    =   mysqli_fetch_assoc($get_admin_result);
+            echo "<div class=\"row\">
+                  <div class=\"col-lg-12 p-5\"><h2 class=\"display-6\">Welcome, " . $admin_result['username'] . "</h2></div>" .
+                  "</div>";
+        } else
+        {
+            array_push($errors, "An error has occured while retrieving admin information");
+        }
+    }
+
 }
 
 /*

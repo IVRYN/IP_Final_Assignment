@@ -17,11 +17,14 @@ include ("includes/header.php");
 
 <div class="container g-3">
     <div class="main-container row g-3 my-3">
-        <div class="col-sm-2">
-            <h1>hello</h1>
+        <div class="col-sm-12 col-md-6 col-lg-4 p-5">
+            <div class="m-auto" style="border-radius: 100px; background-color: #00008b; width: 190px; height: 190px;"></div>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-8">
+            <?php get_user($_SESSION['user_id'], $_SESSION['authorization']) ?>
         </div>
     </div>
-    <div class="main-container row g-3 my-3">
+    <div class="main-container row g-3 my-3 px-3">
         <div class="col-sm-12">
             <h2>Booked tickets</h2>
             <?php

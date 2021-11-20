@@ -2,6 +2,7 @@
 session_start();
 
 include ("authenticate.php");
+include ("authorization.php");
 include ("common.php");
 
 if (isset($_POST['add_booking']))
@@ -15,7 +16,7 @@ include ("includes/header.php");
 
 <div class="container">
     <div class="row justify-content-center mt-5">
-        <div id="main-container" class="col-sm-5">
+        <div class="main-container col-sm-5">
             <div class="container py-5">
                 <form class="row g-3 mb-3" action="add_booking.php" method="post">
                     <div class="col-sm-6">

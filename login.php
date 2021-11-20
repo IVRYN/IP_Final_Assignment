@@ -3,6 +3,11 @@ session_start();
 $page_title =   "Login | Murni Bas Ticketing";
 include ('common.php');
 
+if (isset($_SESSION['login']))
+{
+    header('Location: dashboard.php');
+}
+
 if (isset($_POST['login']))
 {
     login_user($_POST['username'], $_POST['password']);

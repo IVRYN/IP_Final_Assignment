@@ -1,6 +1,14 @@
 <?php
+session_start();
+
 $page_title =   "Register | Murni Bas Ticketing";
-include ("common.php");
+include ('common.php');
+
+if (isset($_SESSION['login']))
+{
+    if ($_SESSION['login'] == true)
+        header('Location: dashboard.php');
+}
 
 if (isset($_POST['register']))
 {
