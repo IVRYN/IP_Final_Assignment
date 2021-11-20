@@ -838,7 +838,7 @@ function display_errors()
     {
         foreach ($errors as $error)
         {
-            echo "<div class=\"p-2 my-2 bg-danger text-white\">$error</div>";
+            echo "<div class=\"p-2 my-2 bg-danger text-white\"><span class=\"material-icons\" style=\"vertical-align: middle; margin-right: 10px;\">warning</span> $error </div>";
         }
     }
 }
