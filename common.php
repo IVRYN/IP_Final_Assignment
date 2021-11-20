@@ -108,6 +108,7 @@ function login_user($username, $password)
 function register_user($f_name, $l_name, $mobilehp, $username, $password, $confirm_password)
 {
     global $errors;
+    global $success;
     global $dbconnect;
 
     if (!empty($f_name))
@@ -143,50 +144,109 @@ function register_user($f_name, $l_name, $mobilehp, $username, $password, $confi
 
     if (count($errors) == 0)
     {
-        //  Check if phone number already exist
-        $user_phone_check   =   sprintf("SELECT customer_id
-                                         FROM customer
-                                         WHERE mobilehp='%s'",
-                                         $mobilehp
-                                       );
+        $username_exist     =   registration_check($username);
 
-        $user_phone_result  =   mysqli_query($dbconnect, $user_phone_check);
-
-        if (mysqli_num_rows($user_phone_result) == 0)
+        if (!$username_exist)
         {
-            $password       =   md5($password);
+            //  Check if phone number already exist
+            $user_phone_check   =   sprintf("SELECT customer_id
+                                             FROM customer
+                                             WHERE mobilehp='%s'",
+                                             $mobilehp
+                                           );
 
-            $register_user  =   sprintf("INSERT INTO customer
-                                         (f_name, l_name, mobilehp, username, password)
-                                         VALUES
-                                         ('%s', '%s', '%s', '%s', '%s')",
-                                         $f_name,
-                                         $l_name,
-                                         $mobilehp,
-                                         $username,
-                                         $password
-                                       );
+            $user_phone_result  =   mysqli_query($dbconnect, $user_phone_check);
 
-            $register_user_result   =   mysqli_query($dbconnect, $register_user);
+            if (mysqli_num_rows($user_phone_result) == 0)
+            {
+                $password       =   md5($password);
 
-            //  Check if users has been successfully registered
-            if ($register_user_result)
-                echo "Successfully Registered";
-            else
-                array_push($errors, "Something went wrong with the register query");
+                $register_user  =   sprintf("INSERT INTO customer
+                                             (f_name, l_name, mobilehp, username, password)
+                                             VALUES
+                                             ('%s', '%s', '%s', '%s', '%s')",
+                                             $f_name,
+                                             $l_name,
+                                             $mobilehp,
+                                             $username,
+                                             $password
+                                           );
 
+                $register_user_result   =   mysqli_query($dbconnect, $register_user);
+
+                //  Check if users has been successfully registered
+                if ($register_user_result)
+                    array_push($success, "Successfully Registered");
+                else
+                    array_push($errors, "Something went wrong with the register query");
+
+            } else
+            {
+                array_push($errors, "Mobile phone number has already been registered");
+            }
         } else
         {
-            array_push($errors, "Mobile phone number has already been registered");
+            array_push($errors, "The username has already been registered");
         }
-
     }
 
     mysqli_close($dbconnect);
 }
 
 /*
- *  @param  user_id     ->  int
+ *  @param  username    ->  string
+ *
+ *  @brief
+ *  check if username is matched with any registered users or admin.
+ *
+ *  @return void
+ */
+function registration_check($username)
+{
+    global $dbconnect;
+
+    // check admin users if any matching user exist
+    $admin_username_query   =   sprintf("SELECT username
+                                         FROM admin
+                                         WHERE username = '%s'",
+                                         $username
+                                        );
+
+    $admin_username_result  =   mysqli_query($dbconnect, $admin_username_query);
+
+    //  Check if username exist in admin database
+    $admin_username_exist;
+
+    if(mysqli_num_rows($admin_username_result) == 0)
+        $admin_username_exist   =   false;
+    else
+        $admin_username_exist   =   true;
+
+    // check user if any matching user exist
+    $user_username_query    =   sprintf("SELECT username
+                                         FROM customer
+                                         WHERE username = '%s'",
+                                         $username
+                                        );
+
+    $user_username_result   =   mysqli_query($dbconnect, $user_username_query);
+
+    $user_username_exist;
+
+    if (mysqli_num_rows($user_username_result) == 0)
+        $user_username_exist    =   false;
+    else
+        $user_username_exist    =   true;
+
+    //  Check whether both exist in both
+    if (!($admin_username_exist) && !($user_username_exist))
+        return false;
+    else
+        return true;
+}
+
+/*
+ *  @param  user_id     ->  integer
  *
  *  @brief
  *  queries the database for associated tickets based on the user id
@@ -219,7 +279,7 @@ function user_booked_ticket_view($user_id)
                   <h2>There is currently $user_number_tickets booked.</h2>
               </div>
               <div class=\"col-2 col-sm-2\">
-                  <a class=\"float-end btn btn-primary\" href=\"add_booking.php\">
+                  <a class=\"float-end btn btn-success\" href=\"add_booking.php\">
                       <span style=\"vertical-align: middle;\" class=\"material-icons\">add</span>
                   </a>
               </div>
@@ -284,13 +344,43 @@ function user_booked_ticket_view($user_id)
     mysqli_close($dbconnect);
 }
 
-function admin_user_booking_view()
+/*
+ *  @param  username    ->  string
+ *
+ *  @brief
+ *  This function is for the admin to view the available user bookings
+ *  It uses the username input to search for the matching user booking based
+ *  on the username.
+ *
+ *  @return void
+ */
+function admin_user_booking_view($username = "")
 {
     global $dbconnect;
 
-    // if (isset($username_query)) {}
+    $admin_view_ticket_query;
 
-    $admin_view_all_ticket_query    =   "SELECT b.booking_id,
+    if (!empty($username))
+    {
+        $admin_view_ticket_query    =   sprintf("SELECT b.booking_id,
+                                                        c.customer_id,
+                                                        c.username,
+                                                        c.f_name,
+                                                        c.l_name,
+                                                        b.depart_date,
+                                                        b.depart_time,
+                                                        b.depart_station,
+                                                        b.dest_station
+                                                 FROM customer AS c, busbooking AS b, customer_busbooking AS cb
+                                                 WHERE cb.customer_id = c.customer_id
+                                                 AND cb.booking_id = b.booking_id
+                                                 AND c.username = '%s'
+                                                 ORDER BY booking_id DESC",
+                                                 $username
+                                                );
+    } else
+    {
+        $admin_view_ticket_query    =   "SELECT b.booking_id,
                                                 c.customer_id,
                                                 c.username,
                                                 c.f_name,
@@ -303,18 +393,26 @@ function admin_user_booking_view()
                                          WHERE cb.customer_id = c.customer_id
                                          AND cb.booking_id = b.booking_id
                                          ORDER BY booking_id DESC";
+    }
 
-    $admin_view_all_ticket_result   =   mysqli_query($dbconnect, $admin_view_all_ticket_query);
+    $admin_view_ticket_result   =   mysqli_query($dbconnect, $admin_view_ticket_query);
 
-    $number_of_tickets              =   mysqli_num_rows($admin_view_all_ticket_result);
+    $number_of_tickets              =   mysqli_num_rows($admin_view_ticket_result);
 
     if ($number_of_tickets > 0)
     {
-        echo "<div class=\"col-sm-10 justify-content-center\">
+        echo "<div class=\"col-sm-8 justify-content-center\">
                   <h2>There is currently $number_of_tickets booked.</h2>
               </div>
-              <div class=\"col-sm-2\">
-
+              <div class=\"col-sm-4\">
+                  <form action=\"dashboard.php\" method=\"post\">
+                      <div class=\"input-group\">
+                          <input class=\"form-control\" type=\"text\" name=\"search\" />
+                          <button class=\"btn btn-outline-primary\" type=\"submit\" name=\"search_user\">
+                              <span style=\"vertical-align: middle;\" class=\"material-icons\">search</span>
+                          </button>
+                      </div>
+                  </form>
               </div>
               <div class=\"table-responsive\">
                   <table class=\"table\">
@@ -334,7 +432,7 @@ function admin_user_booking_view()
                       <tbody>
              ";
 
-        while ($ticket_rows     =   mysqli_fetch_assoc($admin_view_all_ticket_result))
+        while ($ticket_rows     =   mysqli_fetch_assoc($admin_view_ticket_result))
         {
             echo "<tr>
                       <td>" . $ticket_rows['booking_id'] . "</td>
@@ -361,7 +459,7 @@ function admin_user_booking_view()
               </div>
              ";
 
-        mysqli_free_result($admin_view_all_ticket_result);
+        mysqli_free_result($admin_view_ticket_result);
     } else
     {
         echo "<div class=\"col-sm-12 justify-content-center\">
@@ -737,12 +835,10 @@ function display_errors()
 
     if (count($errors) > 0)
     {
-        echo "<ul>";
         foreach ($errors as $error)
         {
-            echo "<li>$error</li>";
+            echo "<div class=\"p-2 my-2 bg-danger text-white\">$error</div>";
         }
-        echo "</ul>";
     }
 }
 
@@ -752,12 +848,10 @@ function display_success()
 
     if (count($success) > 0)
     {
-        echo "<ul>";
         foreach ($success as $suc)
         {
-            echo "<li>$suc</li>";
+            echo "<div class=\"p-2 my-2 bg-success text-white\">$suc</div>";
         }
-        echo "</ul>";
     }
 }
 

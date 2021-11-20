@@ -44,7 +44,7 @@ include ("includes/header.php");
                     </div>
                 </form>
             </div>
-            <div class="col-sm-7">
+            <div class="col-sm-12">
                 <?php display_errors(); ?>
             </div>
         </div>

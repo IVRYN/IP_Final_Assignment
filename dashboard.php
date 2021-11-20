@@ -16,7 +16,7 @@ include ("includes/header.php");
 ?>
 
 <div class="container">
-    <div class="row g-3">
+    <div id="main-container" class="row g-3 mt-3">
         <div class="col-sm-12">
             <h2>Booked tickets</h2>
             <?php
@@ -26,9 +26,16 @@ include ("includes/header.php");
         </div>
         <?php
             if ($_SESSION['authorization'] == "user")
+            {
                 user_booked_ticket_view($_SESSION['user_id']);
+            }
             else
-                admin_user_booking_view();
+            {
+                if (isset($_POST['search_user']))
+                    admin_user_booking_view($_POST['search']);
+                else
+                    admin_user_booking_view();
+            }
         ?>
     </div>
 </div>
