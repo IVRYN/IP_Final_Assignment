@@ -15,8 +15,13 @@ $page_title     =   "Dashboard | Murni Bus Ticketing";
 include ("includes/header.php");
 ?>
 
-<div class="container">
-    <div id="main-container" class="row g-3 mt-3">
+<div class="container g-3">
+    <div class="main-container row g-3 my-3">
+        <div class="col-sm-2">
+            <h1>hello</h1>
+        </div>
+    </div>
+    <div class="main-container row g-3 my-3">
         <div class="col-sm-12">
             <h2>Booked tickets</h2>
             <?php

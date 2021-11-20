@@ -1,12 +1,17 @@
-#main-container
+.main-container
 {
     border: 1px solid #ced4da;
     border-radius: 5px;
     box-shadow: 0px 0px 5px 1px #ced4da;
+    background-color: #ffffff;
 }
 
 #header
 {
-    overflow: hidden;
+    background: url(../images/header.jpg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: 50% -400%;
     height: 400px;
+    border-radius: 5px;
 }
