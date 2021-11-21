@@ -310,7 +310,6 @@ function get_user($user_id = 0, $authorization = 'user')
             array_push($errors, "An error has occured while retrieving admin information");
         }
     }
-
 }
 
 /*
@@ -663,8 +662,6 @@ function user_delete_booking($user_id, $booking_id)
         array_push($success, "Booking ID $booking_id has been successfully cancelled");
     else
         array_push($errors, "Something went wrong during cancellation");
-
-    mysqli_close($dbconnect);
 }
 
 /*
@@ -695,8 +692,6 @@ function admin_delete_booking($booking_id)
         array_push($success, "Booking ID $booking_id has been successfully cancelled");
     else
         array_push($errors, "Something went wrong during cancellation");
-
-    mysqli_close($dbconnect);
 }
 
 /*
@@ -768,7 +763,7 @@ function user_edit_confirm($booking_id, $depart_date, $depart_time, $depart_stat
         if (mysqli_affected_rows($dbconnect))
             header('Location: dashboard.php');
         else
-            array_push($errors, "No changes has been made to the booking information, please contact an administrator");
+            array_push($errors, "No changes has been made to the booking information");
     }
 
     mysqli_close($dbconnect);
@@ -890,6 +885,26 @@ function sticky_select($request, $value)
 }
 
 /*
+ *  @param  date_value  ->  string
+ *  @param  time_value  ->  string
+ *
+ *  @brief
+ *  Stickies the value according to the field parameter input.
+ *
+ *  @return void
+ */
+function sticky_datetime($date_value = NULL, $time_value = NULL)
+{
+    if (isset($_POST['add_booking']))
+    {
+        if (!empty($date_value))
+            echo "$date_value";
+        else if (!empty ($time_value))
+            echo "$time_value";
+    }
+}
+
+/*
  *  @param  null
  *
  *  @brief
@@ -925,7 +940,7 @@ function display_success()
     {
         foreach ($success as $suc)
         {
-            echo "<div class=\"p-2 my-2 bg-success text-white\">$suc</div>";
+            echo "<div class=\"p-2 my-2 bg-success text-white\"><span class=\"material-icons\" style=\"vertical-align: middle; margin-right: 10px;\">thumb_up</span> $suc </div>";
         }
     }
 }

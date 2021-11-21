@@ -20,8 +20,8 @@ include ("includes/header.php");
 
 <div class="container">
     <div class="row justify-content-center mt-5">
-        <div class="col-sm-5">
-            <div class="container py-5">
+        <div class="col-sm-10 col-md-8 col-lg-8">
+            <div class="main-container container py-5">
                 <form class="row g-3" action="register.php" method="post">
                     <div class="col-sm-6">
                         <label for="first_name" class="form-label">First Name:</label>
@@ -60,5 +60,5 @@ include ("includes/header.php");
 </div>
 
 <?php
-include ("includes/footer.php");
+include ("includes/footer_fixed.php");
 ?>

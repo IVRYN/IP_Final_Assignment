@@ -5,8 +5,13 @@ include ("authenticate.php");
 include ("authorization.php");
 include ("common.php");
 
+$depart_date = "";
+$depart_time = "";
+
 if (isset($_POST['add_booking']))
 {
+    $depart_date    =   $_POST['depart_date'];
+    $depart_time    =   $_POST['depart_time'];
     user_add_booking($_SESSION['user_id'], $_POST['depart_date'], $_POST['depart_time'], $_POST['depart_station'], $_POST['dest_station']);
 }
 
@@ -16,16 +21,16 @@ include ("includes/header.php");
 
 <div class="container">
     <div class="row justify-content-center mt-5">
-        <div class="main-container col-sm-5">
+        <div class="main-container col-sm-10 col-md-8 col-lg-8">
             <div class="container py-5">
                 <form class="row g-3 mb-3" action="add_booking.php" method="post">
                     <div class="col-sm-6">
                         <label for="depart_date" class="form-label">Date of Departure</label>
-                        <input id="depart_date" min="<?php echo date("Y-m-d"); ?>" max="<?php echo date("Y-m-d", strtotime('+1 year')); ?>" type="date" name="depart_date" class="form-control"/>
+                        <input id="depart_date" min="<?php echo date("Y-m-d"); ?>" max="<?php echo date("Y-m-d", strtotime('+1 year')); ?>" type="date" name="depart_date" value="<?php sticky_datetime($depart_date, NULL); ?>" class="form-control"/>
                     </div>
                     <div class="col-sm-6">
                         <label for="depart_time" class="form-label">Time of Departure</label>
-                        <input id="depart_time" type="time" name="depart_time" class="form-control"/>
+                        <input id="depart_time" type="time" name="depart_time" value="<?php sticky_datetime(NULL, $depart_time); ?>" class="form-control"/>
                     </div>
                     <div class="col-sm-12">
                         <label for="depart_station" class="form-label">Station of Departure</label>
@@ -62,3 +67,5 @@ include ("includes/header.php");
         </div>
     </div>
 </div>
+
+<?php include ('includes/footer_fixed.php'); ?>
