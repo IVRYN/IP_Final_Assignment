@@ -95,6 +95,7 @@ include ('includes/header.php');
                     <div class="col-sm-12">
                         <input type="hidden" name="edit_booking" value="<?php echo $booking_id; ?>" />
                         <input type="submit" class="btn btn-primary" name="confirm_edit" value="Edit Booking" />
+                        <a href="dashboard.php" class="btn btn-danger">Cancel</a>
                     </div>
                 </form>
             </div>

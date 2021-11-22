@@ -53,7 +53,10 @@ include ("includes/header.php");
                 </form>
             </div>
             <div class="col-sm-12">
-                <?php display_errors(); ?>
+                <?php
+                display_errors();
+                display_success();
+                ?>
             </div>
         </div>
     </div>
