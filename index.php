@@ -63,7 +63,11 @@ include ("includes/header.php");
         </div>
     </div>
 </div>
-
-<?php
-include ("includes/footer.php");
-?>
+    <div class="container-fluid bg-darkblue">
+        <footer class="footer mt-auto py-3 text-light">
+            <p>Copyright 2021 Murni Bus Ticketing</p>
+        </footer>
+    </div>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+</body>
+</html>
